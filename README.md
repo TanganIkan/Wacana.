@@ -43,7 +43,7 @@ Untuk menjalankan proyek ini di lingkungan lokal Anda, ikuti langkah-langkah ber
     $servername = "localhost";
     $username = "root";
     $password = ""; // Sesuaikan jika ada password
-    $dbname = "wacana_db"; // Sesuaikan dengan nama database Anda
+    $dbname = "majalah"; // Sesuaikan dengan nama database Anda
     ```
 
 4.  **Jalankan Server**
