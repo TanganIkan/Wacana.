@@ -1,117 +1,172 @@
+<?php
+session_start();
+
+$registerSuccess = '';
+if (isset($_SESSION['register_success'])) {
+  $registerSuccess = $_SESSION['register_success'];
+  unset($_SESSION['register_success']);
+}
+
+$errors = [
+  'login' => $_SESSION['login_error'] ?? '',
+];
+
+$activeForm = $_SESSION['active_form'] ?? 'login';
+
+unset($_SESSION['login_error'], $_SESSION['active_form']);
+
+function isActiveForm($formName, $activeForm)
+{
+  return $formName === $activeForm ? 'active' : '';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../public/css/output.css" />
-    <title>Sign In</title>
-  </head>
-  <body>
-    <div
-      class="w-full min-h-screen flex justify-center items-center bg-[#faf2ef]"
-    >
-      <main class="p-5 w-96">
-        <div class="mb-4">
-          <h1 class="text-4xl font-bold capitalize">sign in</h1>
-          <p class="text-[#666467] text-sm">
-            Welcome back! Please sign in to continue.
-          </p>
-        </div>
-        <form action="" method="post" class="flex flex-col gap-3 text-sm">
-          <div>
-            <label for="username" class="block mb-3 font-semibold capitalize"
-              >Username</label
-            >
-            <div class="relative">
-              <input
-                type="text"
-                name="username"
-                id="username"
-                placeholder="Enter your Username"
-                class="border border-black focus:outline-none px-3 py-3 w-full rounded-sm placeholder-[#666467]"
-              />
 
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="absolute w-4 h-4 transform -translate-y-1/2 top-1/2 right-3"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Page</title>
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <link rel="stylesheet" href="../public/css/output.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+    }
+  </style>
+</head>
 
-          <div>
-            <label for="username" class="block mb-3 font-semibold capitalize"
-              >password</label
-            >
-            <div class="relative">
-              <input
-                type="password"
-                name="password"
-                id="password"
-                placeholder="Enter your Password"
-                class="border border-black focus:outline-none px-3 py-3 w-full rounded-sm placeholder-[#666467]"
-              />
+<body class="bg-[#d9d9d9] min-h-screen flex flex-col">
+  <header class="flex justify-between items-center px-6 py-4">
+    <!-- Header content if any -->
+  </header>
 
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="absolute w-4 h-4 transform -translate-y-1/2 top-1/2 right-3"
-              >
-                <path
-                  d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z"
-                />
-                <path
-                  d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z"
-                />
-                <path
-                  d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z"
-                />
-              </svg>
-            </div>
-          </div>
+  <main class="flex-grow flex justify-center items-center px-4 relative overflow-hidden">
+    <!-- Background decorations (only show on large screens) -->
+    <div aria-hidden="true" class="hidden lg:flex absolute inset-0 justify-between items-center pointer-events-none">
+      <!-- Left images -->
+      <div class="relative w-1/3 h-[80%] flex justify-center">
+        <img src="./public/assets/11.webp" alt="img 11" class="absolute right-[-70px] top-[70px] w-[390px]" />
+        <img src="./public/assets/12.webp" alt="img 12" class="absolute left-[-20px] top-[200px] w-[390px]" />
+        <img src="./public/assets/garis1.webp" alt="garis"
+          class="absolute right-[-35px] top-[150px] w-[200px] h-[250px] opacity-50 -z-10" />
+        <img src="./public/assets/garis1.webp" alt="garis"
+          class="absolute right-[160px] top-[150px] w-[200px] h-[250px] opacity-50 -z-10" />
+        <img src="./public/assets/garis1.webp" alt="garis"
+          class="absolute right-[350px] top-[150px] w-[200px] h-[250px] opacity-50 -z-10" />
+      </div>
 
-          <div
-            class="flex items-center justify-between py-3 text-xs font-semibold capitalize"
-          >
-            <div class="flex items-center gap-2">
-              <input
-                type="checkbox"
-                class="w-4 h-4 accent-[#ae7aff] cursor-pointer"
-              />
-              <label for="checkbox">remember me</label>
-            </div>
-
-            <button class="cursor-pointer">Forget Password</button>
-          </div>
-          <div>
-            <button
-              class="w-full bg-[#ae7aff] text-white py-3 capitalize border-black border rounded-sm hover:shadow-[3px_3px_0_0_black] font-semibold duration-200"
-            >
-              sign in
-            </button>
-
-            <div class="flex items-center gap-3 my-3">
-              <span class="block w-full ml-10 border-t border-black"></span>
-              <span>or</span>
-              <span class="block w-full mr-10 border-t border-black"></span>
-            </div>
-
-            <button
-              class="w-full bg-white text-black py-3 capitalize border-black border rounded-sm hover:shadow-[3px_3px_0_0_black] font-semibold duration-200"
-            >
-              sign up
-            </button>
-          </div>
-        </form>
-      </main>
+      <!-- Right images -->
+      <div class="relative w-1/3 h-[80%] flex justify-center">
+        <img src="./public/assets/21.webp" alt="img 21" class="absolute right-[40px] top-[-10px] w-[390px]" />
+        <img src="./public/assets/22.webp" alt="img 22" class="absolute right-[300px] top-[210px] w-[390px]" />
+        <img src="./public/assets/3.webp" alt="pesawat" class="absolute right-[250px] top-[1px] w-[390px]" />
+        <img src="./public/assets/garis1.webp" alt="garis"
+          class="absolute right-[-35px] top-[150px] w-[200px] h-[250px] opacity-50 -z-10" />
+        <img src="./public/assets/garis1.webp" alt="garis"
+          class="absolute right-[160px] top-[150px] w-[200px] h-[250px] opacity-50 -z-10" />
+        <img src="./public/assets/garis1.webp" alt="garis"
+          class="absolute right-[350px] top-[150px] w-[200px] h-[250px] opacity-50 -z-10" />
+      </div>
     </div>
-  </body>
+
+    <!-- SVG wave background -->
+    <div aria-hidden="true" class="absolute inset-0 flex justify-center items-center pointer-events-none -z-10">
+      <svg class="w-full max-w-md h-48" fill="none" stroke="#b3b3b3" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="1" viewBox="0 0 320 80" preserveAspectRatio="none">
+        <path
+          d="M0 20c20 0 20 20 40 20s20-20 40-20 20 20 40 20 20-20 40-20 20 20 40 20 20-20 40-20 20 20 40 20 20-20 40-20v40H0z" />
+        <path
+          d="M0 40c20 0 20 20 40 20s20-20 40-20 20 20 40 20 20-20 40-20 20 20 40 20 20-20 40-20 20 20 40 20 20-20 40-20v40H0z"
+          transform="translate(0,20)" />
+        <path
+          d="M0 60c20 0 20 20 40 20s20-20 40-20 20 20 40 20 20-20 40-20 20 20 40 20 20-20 40-20 20 20 40 20 20-20 40-20v40H0z"
+          transform="translate(0,40)" />
+      </svg>
+    </div>
+
+    <!-- Login Form Card -->
+    <div id="login-form" <?= isActiveForm('login', $activeForm); ?>
+      class="relative w-full max-w-md bg-gradient-to-b from-white to-[#f7f7f7] rounded-sm p-8 shadow-2xl z-10 border border-black">
+      <h1 class="text-center text-[22px] font-semibold text-black mb-2">Login</h1>
+      <p class="text-center text-[15px] text-gray-600 mb-4">Masukkan detail untuk melakukan login</p>
+      <form class="space-y-5" action="login-regis.php" method="post">
+        <div>
+          <label for="email" class="block text-[12px] font-semibold text-black mb-1">Email*</label>
+          <input id="email" name="email" type="email" placeholder="Masukkan email" autocomplete="email"
+            class="w-full rounded-xm border border-black px-3 py-2 text-[14px] text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-300" />
+        </div>
+
+        <div>
+          <label for="password" class="block text-[12px] font-semibold text-black mb-1">Password*</label>
+          <input id="password" name="password" type="password" placeholder="Masukkan password"
+            autocomplete="current-password"
+            class="w-full rounded-sm border border-black px-3 py-2 text-[14px] text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-300" />
+        </div>
+
+        <p class="text-[10px] text-black max-w-[280px]">
+          Informasi ini akan disimpan dengan aman sesuai dengan
+          <strong>Ketentuan Layanan</strong>
+          <a href="#" class="underline font-semibold">Kebijakan Privasi</a>
+        </p>
+
+        <div class="mt-6 flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
+          <!-- Tombol -->
+          <button type="button" onclick="goToRegister()"
+            class="border border-black rounded-sm px-6 py-2 text-[14px] font-semibold text-black hover:bg-gray-100 w-full sm:w-auto shadow-[3px_3px_0px_0px_black] transition duration-300 ease-in-out">
+            Belum memiliki akun?
+          </button>
+
+          <!-- Script -->
+          <script>
+            function goToRegister() {
+              // Tambahkan kelas animasi fade-out ke body
+              document.body.classList.add("fade-out");
+
+              // Setelah animasi selesai (300ms), redirect ke register.php
+              setTimeout(() => {
+                window.location.href = "register.php";
+              }, 300);
+            }
+          </script>
+
+          <!-- CSS Transisi -->
+          <style>
+            body.fade-out {
+              opacity: 0;
+              transition: opacity 0.3s ease-in-out;
+            }
+          </style>
+
+          <button type="submit" name="login"
+            class="bg-yellow-300 rounded-sm border border-black px-8 py-2 text-[14px] font-semibold text-black hover:brightness-90 w-full sm:w-auto shadow-[3px_3px_0px_0px_black]">Login</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <?php if ($registerSuccess): ?>
+    <script>
+      Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful',
+        text: '<?= htmlspecialchars($registerSuccess, ENT_QUOTES) ?>',
+        draggable: true
+      });
+    </script>
+  <?php endif; ?>
+
+  <?php if (!empty($errors['login'])): ?>
+    <script>
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: '<?= htmlspecialchars($errors['login'], ENT_QUOTES) ?>',
+        confirmButtonColor: '#ef4444'
+      });
+    </script>
+  <?php endif; ?>
+</body>
+
 </html>
